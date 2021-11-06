@@ -55,6 +55,15 @@ body {
   justify-content: center;
 }
 
+#last-answer-status {
+  margin: auto;
+  width: 30%;
+  border-top: 2px solid #777777; 
+  padding: 10px;
+  text-align: center;
+}
+
+
 .card-footer {
   margin-top: 50px;
   display: flex;
