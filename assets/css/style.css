@@ -1,5 +1,5 @@
 :root {
-  --primary: #44e9ff;
+  --primary: #00008b;
   --secondary: #497980;
   --tertiary: rgb(192, 246, 253);
   --grey: #333;
@@ -34,19 +34,14 @@ body {
   margin:40px;
 }
 
-.answer-list {
-  width: 500px;
-  list-style-type: none;
-}
-
 .card-header {
-  display: flex;
+  display:flex;
   justify-content:center;
 }
 
 .card-header h2 {
   margin-left: 20px;
-  max-width: 30%;
+  max-width: 10%;
   min-width: 500px;
 }
 
@@ -55,12 +50,28 @@ body {
   justify-content: center;
 }
 
+.card-body #initials-input {
+  font-size: 20px;
+  padding-left: 10px;
+  margin: 5px;
+  border-width: 2px;
+  max-width: 100px;
+}
+
+.card-body #initials-prompt {
+  font-size: 20px;
+  margin: 10px 5px;
+  padding-left: 50px;
+}
+
 #last-answer-status {
   margin: auto;
   width: 30%;
-  border-top: 2px solid #777777; 
-  padding: 10px;
-  text-align: center;
+  border-top: 2px solid #999999; 
+  padding: 10px 10px;
+  font-size: 1.3em;
+  text-align: left;
+  color: #999999;
 }
 
 
@@ -74,13 +85,38 @@ body {
   outline: none;
   border: none;
   display: inline-block;
-  padding: 10px 15px;
+  padding: 5px 7px;
   background: var(--primary);
+  color: white;
   font-size: 1.2rem;
-  border-radius: 12px;
+  border-radius: 6px;
   position: relative;
-  top: -3px;
-  box-shadow: 0 3px var(--grey);
+  height: 50px;
+  width: 300px;
+  /*top: -3px;*/
+  /*box-shadow: 0 3px var(--grey);*/
+}
+
+.submit-btn {
+  outline: none;
+  border: none;
+  display: inline-block;
+  margin-top: 6px;
+  padding: 5px 7px;
+  background: var(--primary);
+  color: white;
+  font-size: 1.2rem;
+  border-radius: 6px;
+  position: relative;
+  height: 32px;
+  width: 100px;
+  /*top: -3px;*/
+  /*box-shadow: 0 3px var(--grey);*/
+}
+
+.answer-list {
+  width: 500px;
+  list-style-type: none;
 }
 
 .answer-list .btn {
