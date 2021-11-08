@@ -158,6 +158,12 @@ var storeScore = function () {
     return b.val - a.val;
   });
   localStorage.setItem("scores", JSON.stringify(scoresObj));
+
+
+  removeAllChildNodes(document.querySelector(".card-body"));
+  document.querySelector(".quiz h1").textContent = "";
+  document.querySelector(".card-header h2").textContent = "";
+
 }
 
 var endQuiz = function () {
@@ -193,6 +199,7 @@ var endQuiz = function () {
   cardBodyEl.appendChild(buttonEl);
 
   buttonEl.addEventListener("click", storeScore);
+
 
 };
 
