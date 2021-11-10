@@ -1,6 +1,6 @@
 :root {
   --primary: #00008b;
-  --secondary: #497980;
+  --secondary: #DB7093;
   --tertiary: rgb(192, 246, 253);
   --grey: #333;
 }
@@ -12,7 +12,7 @@ body {
 }
 .quiz {
   justify-content: center;
-  margin-top: 100px;
+  margin-top: 50px;
   width: 100%;
   height: 100px;
   text-align: center;
@@ -22,8 +22,8 @@ body {
   display: flex;
   justify-content: space-between;
   /*justify-content: center;*/
-  margin-left: 25px;
-  margin-right: 25px;
+  margin-left: 50px;
+  margin-right: 50px;
 }
 
 .quiz h1 {
@@ -47,7 +47,7 @@ body {
 }
 
 .card-header h2 {
-  margin-left: 20px;
+  margin-left: 0px;
   max-width: 10%;
   min-width: 360px;
 }
