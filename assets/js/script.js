@@ -6,26 +6,26 @@ var quizQuestions = [
       "Commonly used data types do not include:",
     "answers":
       [
-        "strings",
-        "booleans",
         "alerts",
+        "booleans",
+        "strings",
         "numbers"
       ],
     "correct-answer-index":
-      2
+      0
   },
   {
     "question":
-      "The condition in and if/else statement is enclosed in _________",
+      "The condition in an if/else statement is enclosed in _________",
     "answers":
       [
         "quotes",
         "curly brackets",
-        "parenthesis",
-        "square brackets"
+        "square brackets",
+        "parenthesis"
       ],
     "correct-answer-index":
-      2
+      3
   },
   {
     "question":
@@ -46,12 +46,12 @@ var quizQuestions = [
     "answers":
       [
         "commas",
-        "curly brackets",
         "quotes",
+        "curly brackets",
         "parenthesis"
       ],
     "correct-answer-index":
-      2  
+      1  
   },
   {
     "question":
@@ -64,7 +64,7 @@ var quizQuestions = [
         "console.log"
       ],
     "correct-answer-index":
-      2  
+       3 
   }
 ];
 var numOfQuizQuestions = quizQuestions.length;
