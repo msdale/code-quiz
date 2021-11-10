@@ -8,6 +8,7 @@
 body {
   align-items: center;
   justify-content: center;
+  text-align: center;
 }
 .quiz {
   justify-content: center;
@@ -20,6 +21,7 @@ body {
 .quiz header {
   display: flex;
   justify-content: space-between;
+  /*justify-content: center;*/
   margin-left: 25px;
   margin-right: 25px;
 }
@@ -27,7 +29,7 @@ body {
 .quiz h1 {
   margin-top: 40px;
   margin-bottom: 40px;
-  font-size: 50px;
+  font-size: 30px;
 }
 
 .card {
@@ -39,10 +41,15 @@ body {
   justify-content:center;
 }
 
+.card-header ol {
+  width: 100px;
+  text-align:center;
+}
+
 .card-header h2 {
   margin-left: 20px;
   max-width: 10%;
-  min-width: 500px;
+  min-width: 360px;
 }
 
 .card-body {
@@ -79,6 +86,7 @@ body {
   margin-top: 50px;
   display: flex;
   justify-content: center;
+  /*max-width: 200px;*/
 }
 
 .btn {
@@ -97,6 +105,21 @@ body {
   /*box-shadow: 0 3px var(--grey);*/
 }
 
+.btn:hover {
+  background: var(--secondary);
+}
+
+#go-back {
+  flex: 1;
+  margin-right: 10px;
+  max-width: 100px;
+}
+
+#clear {
+  flex: 2;
+  max-width: 300px;
+}
+
 .submit-btn {
   outline: none;
   border: none;
@@ -112,6 +135,10 @@ body {
   width: 100px;
   /*top: -3px;*/
   /*box-shadow: 0 3px var(--grey);*/
+}
+
+.submit-btn:hover {
+  background: var(--secondary);
 }
 
 .answer-list {

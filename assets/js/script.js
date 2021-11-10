@@ -1,7 +1,5 @@
+// Static global variables
 var maxTime = 75; // seconds
-var timeLeft = maxTime;
-var updateTime = 1; // seconds
-var Done = false;
 var quizQuestions = [
   {
     "question":
@@ -32,19 +30,24 @@ var quizQuestions = [
   }
 ];
 var numOfQuizQuestions = quizQuestions.length;
-var questionsAsked = 0;
-var initials = "";
-var finalScore = 0;
+
+// Dynamic global variables  (assigned in codeQuiz())
+var timeLeft;
+var updateTime; // seconds
+var Done;
+var questionsAsked;
+var initials;
+var finalScore;
 
 //***************
 //* QUIZ TIMERS * 
 //***************
 
 var quizTimer = function () {
-
+  console.log("quizTimer timeLeft: " + timeLeft);
   var quizTimeInterval = setInterval(function () {
 
-    if (timeLeft > 0) {
+    if (timeLeft > 0 && !Done) {
       timeLeft--;
     } else {
       Done = true;
@@ -53,47 +56,71 @@ var quizTimer = function () {
     }
 
   }, 1000);
-
-}
+};
 
 var updateTimer = function () {
-
+  console.log("updateTimer timeLeft: " + timeLeft);
   var updateTimeInterval = setInterval(function () {
 
     if (timeLeft > 0 && !Done) {
       document.querySelector("#time-left").textContent = "Time:" + timeLeft;
-      console.log("Timers Running");
     } else {
       document.querySelector("#time-left").textContent = "Time:--";
+      Done = true;
       clearInterval(updateTimeInterval);
-      if (!Done) {
-        endQuiz();
-      }
+      console.log("updateTimer is OFF");
     }
 
   }, updateTime * 1000);
-
 };
 
 //******************
 //* QUIZ FUNCTIONS * 
 //******************
 
-var checkAnswer = function (event) {
+/** Cleaning crew (wherever needed) */
+var removeAllChildNodes = function (parent) {
+  if (parent) {
+    while (parent.firstChild) {
+      parent.removeChild(parent.firstChild);
+    }
+  }
+}
 
+/** Check answer and set status (correct or wrong)...then ask the next question */
+var checkAnswer = function (event) {
   var targetEl = event.target;
   var lastAnswerStatus = targetEl.getAttribute("data-answer-status");
-  document.querySelector("#last-answer-status I").textContent = lastAnswerStatus + "!";
 
-  answerQuestions();
+  // Penalize wrong answers
+  if (lastAnswerStatus.toLowerCase() === "wrong") {
+    timeLeft = timeLeft - 10;
+  }
 
+  answerQuestions(lastAnswerStatus);
 };
 
-var answerQuestions = function () {
+/** Get the question and the answer choices */
+var answerQuestions = function (lastAnswerStatus = null) {
+  // Setup page
+  removeAllChildNodes(document.querySelector(".card-footer"));
+  removeAllChildNodes(document.querySelector(".card-body"));
+  console.log(lastAnswerStatus);
+  if (lastAnswerStatus) {
+    var cardFooter = document.querySelector(".card-footer");
+    cardFooter.innerHTML = "<div id='last-answer-status'><I>" + lastAnswerStatus + "!</I></div>";
+  }
+  var answerListEl = document.createElement("ol");
+  answerListEl.className = "answer-list";
+  var cardBodyEl = document.querySelector(".card-body");
+
+  // Ask the next question
   if (questionsAsked < numOfQuizQuestions) {
-    removeAllChildNodes(document.querySelector(".card-body .answer-list"))
+    removeAllChildNodes(document.querySelector(".answer-list"))
     document.querySelector(".card-header h2").textContent = quizQuestions[questionsAsked].question;
-    var answerList = document.querySelector(".card-body .answer-list")
+    //var cardBodyH2El = document.createElement("h2");
+    //cardBodyH2El.textContent = quizQuestions[questionsAsked].question;
+    //cardBodyEl.appendChild(cardBodyH2El);
     for (var i = 0; i < quizQuestions[questionsAsked].answers.length; i++) {
       var answerEl = document.createElement("li");
       var buttonEl = document.createElement("button");
@@ -106,27 +133,116 @@ var answerQuestions = function () {
       }
       buttonEl.setAttribute("data-index", i);
       answerEl.appendChild(buttonEl);
-      answerList.appendChild(answerEl);
+      answerListEl.appendChild(answerEl);
+      cardBodyEl.appendChild(answerListEl);
       buttonEl.addEventListener("click", checkAnswer);
     }
 
     questionsAsked++;
-  } else {
+  } else { // When there are no more questions to ask...
     endQuiz();
   }
-  console.log(answerList);
-  console.log(JSON.stringify(quizQuestions))
+  console.log(JSON.stringify(quizQuestions[questionsAsked - 1]))
 };
 
-var removeAllChildNodes = function (parent) {
-  if (parent) {
-    while (parent.firstChild) {
-      parent.removeChild(parent.firstChild);
-    }
+var showHighScores = function (clearArg) {
+  Done = true; // turn off timers
+  if (clearArg === "clear") {
+    localStorage.clear();
+    codeQuiz();
   }
-}
 
+  removeAllChildNodes(document.querySelector(".quiz"));
+  removeAllChildNodes(document.querySelector(".card-header"));
+  removeAllChildNodes(document.querySelector(".card-body"));
+  removeAllChildNodes(document.querySelector(".card-footer"));
+
+  // Welcome title 
+  var quizEl = document.querySelector(".quiz");
+  var h1El = document.createElement("h1");
+  h1El.textContent = "High Scores";
+  quizEl.appendChild(h1El);
+
+  // Welcome card
+  var cardBodyEl = document.querySelector(".card-body");
+  //var cardHeaderEl = document.querySelector(".card-header");
+  //cardHeaderEl.style.maxWidth = "30%";
+  //cardHeaderEl.style.marginLeft = "500px";
+  var highScoreListEl = document.createElement("ol");
+  highScoreListEl.style.backgroundColor = "#E8E8E8";
+  var scores = JSON.parse(localStorage.getItem("scores"))
+  if (scores) {
+    for (var i = 0; i < scores.length; i++) {
+      var highScoreEl = document.createElement("li");
+      highScoreEl.textContent = JSON.stringify(scores[i].key + "-" + scores[i].val);
+      highScoreListEl.appendChild(highScoreEl);
+
+    }
+  } else {
+    var highScoreEl = document.createElement("li");
+    highScoreEl.textContent = "No scores recored";
+    highScoreListEl.appendChild(highScoreEl);
+  }
+  //cardHeaderEl.appendChild(highScoreListEl);
+  cardBodyEl.appendChild(highScoreListEl);
+
+  var goBackEl = document.createElement("button");
+  goBackEl.id = "go-back";
+  goBackEl.className = "btn";
+  goBackEl.textContent = "Go Back";
+  var cardFooterEl = document.querySelector(".card-footer");
+  cardFooterEl.appendChild(goBackEl);
+  var clearEl = document.createElement("button");
+  clearEl.id = "clear";
+  clearEl.className = "btn";
+  clearEl.textContent = "Clear high scores";
+  var cardFooterEl = document.querySelector(".card-footer");
+  cardFooterEl.appendChild(clearEl);
+
+  clearEl.addEventListener("click", function () { showHighScores("clear") });
+  goBackEl.addEventListener("click", codeQuiz);
+  /*
+  var cardHeaderEl = document.querySelector(".card-header");
+  cardHeaderEl.style.maxWidth = "30%";
+  cardHeaderEl.style.marginLeft = "500px";
+  var highScoreListEl = document.createElement("ol");
+  highScoreListEl.style.backgroundColor = "#E8E8E8";
+  var scores = JSON.parse(localStorage.getItem("scores"))
+  if (scores) {
+    for (var i = 0; i < scores.length; i++) {
+      var highScoreEl = document.createElement("li");
+      highScoreEl.textContent = JSON.stringify(scores[i].key + "-" + scores[i].val);
+      highScoreListEl.appendChild(highScoreEl);
+
+    }
+  } else {
+    var highScoreEl = document.createElement("li");
+    highScoreEl.textContent = "No scores recored";
+    highScoreListEl.appendChild(highScoreEl);
+  }
+  cardHeaderEl.appendChild(highScoreListEl);
+
+  var goBackEl = document.createElement("button");
+  goBackEl.id = "go-back";
+  goBackEl.className = "btn";
+  goBackEl.textContent = "Go Back";
+  var cardFooterEl = document.querySelector(".card-footer");
+  cardFooterEl.appendChild(goBackEl);
+  var clearEl = document.createElement("button");
+  clearEl.id = "clear";
+  clearEl.className = "btn";
+  clearEl.textContent = "Clear high scores";
+  var cardFooterEl = document.querySelector(".card-footer");
+  cardFooterEl.appendChild(clearEl);
+
+  clearEl.addEventListener("click", function () { showHighScores("clear") });
+  goBackEl.addEventListener("click", codeQuiz);
+  */
+};
+
+/** Store the SCORE! */
 var storeScore = function () {
+  Done = true;
   initials = document.getElementById("initials-input").value;
   if (!initials) {
     alert("You must enter your initials!");
@@ -136,40 +252,46 @@ var storeScore = function () {
   var scores = localStorage.getItem("scores");
   var scoresObj;
   if (scores) {
-    // add more scores
+    // Add more scores
     scoresObj = JSON.parse(scores);
     var found = false;
+    // Look for player initials...
     for (var i = 0; i < scoresObj.length; i++) {
       if (scoresObj[i].key === initials) {
         found = true;
+        // Found um! Update best score
         if (scoresObj[i].val < finalScore) {
           scoresObj[i].val = finalScore;
         }
       }
     }
+    // Add newcomers
     if (!found) {
       scoresObj.push({ key: initials, val: finalScore });
     }
-  } else {
+  } else { // or add the first player
     scoresObj = [{ key: initials, val: finalScore }];
   }
 
+  // Sort by highest score descending
   scoresObj = scoresObj.sort(function (a, b) {
     return b.val - a.val;
   });
+
+  // Store high scores
   localStorage.setItem("scores", JSON.stringify(scoresObj));
 
-
-  removeAllChildNodes(document.querySelector(".card-body"));
-  document.querySelector(".quiz h1").textContent = "";
-  document.querySelector(".card-header h2").textContent = "";
-
+  //removeAllChildNodes(document.querySelector(".answer-list"));
+  //document.querySelector(".quiz h1").textContent = "";
+  //document.querySelector(".card-header h2").textContent = "";
+  //console.log("TRYA GIN");
+  codeQuiz();
 }
 
 var endQuiz = function () {
   Done = true; // just to make sure
-  removeAllChildNodes(document.querySelector(".card-body .answer-list"))
-  document.querySelector(".answer-list").remove();
+  removeAllChildNodes(document.querySelector(".answer-list"))
+  //document.querySelector(".answer-list").remove();
   document.querySelector(".quiz h1").textContent = "All Done";
   var lastAnswerStatusEl = document.getElementById("last-answer-status");
   if (lastAnswerStatusEl) {
@@ -199,19 +321,67 @@ var endQuiz = function () {
   cardBodyEl.appendChild(buttonEl);
 
   buttonEl.addEventListener("click", storeScore);
-
-
 };
 
 var startQuiz = function () {
-  document.querySelector("#start-quiz").remove();
-  document.querySelector(".quiz h1").textContent = "";
+  //document.querySelector("start-quiz").remove();
+  //document.querySelector(".quiz h1").textContent = "";
+  Done = false;
   quizTimer();
   updateTimer();
   answerQuestions();
 };
 
+var buildWelcomePage = function () {
+  removeAllChildNodes(document.querySelector(".quiz"));
+  removeAllChildNodes(document.querySelector(".card-header"));
+  removeAllChildNodes(document.querySelector(".card-body"));
+  removeAllChildNodes(document.querySelector(".card-footer"));
+
+  // Quiz (top) element
+  var quizEl = document.querySelector(".quiz");
+  quizEl.innerHTML = "<Header></Header>";
+  var quizHeaderEl = document.querySelector(".quiz header");
+
+  // High scores and timer
+  var pHighScoresEl = document.createElement("p");
+  pHighScoresEl.textContent = "View HighScores";
+  pHighScoresEl.id = "high-scores";
+  pHighScoresEl.addEventListener("click", showHighScores);
+  quizHeaderEl.appendChild(pHighScoresEl);
+  var pTimerEl = document.createElement("p");
+  pTimerEl.textContent = "Time:--";
+  pTimerEl.id = "time-left";
+  quizHeaderEl.appendChild(pTimerEl);
+
+
+  // Welcome title
+  var h1El = document.createElement("h1");
+  h1El.textContent = "Coding Quiz Challenge";
+  quizEl.appendChild(h1El);
+
+  // Welcome card
+  var cardHeaderEL = document.querySelector(".card-header");
+  cardHeaderEL.innerHTML = "<h2>Answer each question as quick as possible...seconds matter. If your answer is wrong, you will be penalized 10 seconds.<br> <br>Do well my friend!</h2>";
+
+  // START QUIZ button
+  var buttonEl = document.createElement("button");
+  buttonEl.id = "start-quiz";
+  buttonEl.className = "btn";
+  buttonEl.textContent = "START QUIZ";
+  var cardFooterEl = document.querySelector(".card-footer");
+  cardFooterEl.appendChild(buttonEl);
+};
+
 var codeQuiz = function () {
+  // Dynamic global variables assigned
+  timeLeft = maxTime;
+  updateTime = 1; // seconds
+  questionsAsked = 0;
+  initials = "";
+  finalScore = 0;
+
+  buildWelcomePage();
   var startBtnEl = document.getElementById("start-quiz");
   startBtnEl.addEventListener("click", startQuiz);
 };
