@@ -38,7 +38,7 @@ var quizQuestions = [
         "all of the above"
       ],
     "correct-answer-index":
-      3  
+      3
   },
   {
     "question":
@@ -51,7 +51,7 @@ var quizQuestions = [
         "parenthesis"
       ],
     "correct-answer-index":
-      1  
+      1
   },
   {
     "question":
@@ -64,7 +64,7 @@ var quizQuestions = [
         "console.log"
       ],
     "correct-answer-index":
-       3 
+      3
   }
 ];
 var numOfQuizQuestions = quizQuestions.length;
@@ -76,6 +76,7 @@ var Done;
 var questionsAsked;
 var initials;
 var finalScore;
+
 
 //***************
 //* QUIZ TIMERS * 
@@ -112,6 +113,7 @@ var updateTimer = function () {
   }, updateTime * 1000);
 };
 
+
 //******************
 //* QUIZ FUNCTIONS * 
 //******************
@@ -145,15 +147,13 @@ var checkAnswer = function (event) {
 /** Get the question and the answer choices */
 var answerQuestions = function (lastAnswerStatus = null) {
   console.log("START OF answerQuestions()");
+
   // Setup page
+  removeAllChildNodes(document.querySelector(".card-header"));
   removeAllChildNodes(document.querySelector(".card-footer"));
   removeAllChildNodes(document.querySelector(".card-body"));
   document.querySelector(".quiz h1").textContent = "";
   console.log(lastAnswerStatus);
-  if (lastAnswerStatus) {
-    var cardFooter = document.querySelector(".card-footer");
-    cardFooter.innerHTML = "<div id='last-answer-status'><I>" + lastAnswerStatus + "!</I></div>";
-  }
   var answerListEl = document.createElement("ol");
   answerListEl.className = "answer-list";
   var cardBodyEl = document.querySelector(".card-body");
@@ -161,8 +161,10 @@ var answerQuestions = function (lastAnswerStatus = null) {
   // Ask the next question
   if (questionsAsked < numOfQuizQuestions) {
     removeAllChildNodes(document.querySelector(".answer-list"))
-    document.querySelector(".card-header h2").textContent = quizQuestions[questionsAsked].question;
-    document.querySelector(".card-header h2").style.textAlign = "left";
+    var h2El = document.createElement("h2");
+    h2El.textContent = quizQuestions[questionsAsked].question;
+    h2El.style.textAlign = "left";
+    answerListEl.appendChild(h2El);
     for (var i = 0; i < quizQuestions[questionsAsked].answers.length; i++) {
       var answerEl = document.createElement("li");
       var buttonEl = document.createElement("button");
@@ -176,9 +178,15 @@ var answerQuestions = function (lastAnswerStatus = null) {
       buttonEl.setAttribute("data-index", i);
       answerEl.appendChild(buttonEl);
       answerListEl.appendChild(answerEl);
-      cardBodyEl.appendChild(answerListEl);
       buttonEl.addEventListener("click", checkAnswer);
     }
+    if (lastAnswerStatus) {
+      var lastAnswerStatusEl = document.createElement("li");  
+      lastAnswerStatusEl.innerHTML = (lastAnswerStatus + "!").italics();
+      lastAnswerStatusEl.id = "last-answer-status";
+      answerListEl.appendChild(lastAnswerStatusEl);
+    }
+    cardBodyEl.appendChild(answerListEl);
 
     questionsAsked++;
   } else { // When there are no more questions to ask...
@@ -201,48 +209,62 @@ var showHighScores = function (clearArg) {
   removeAllChildNodes(document.querySelector(".card-body"));
   removeAllChildNodes(document.querySelector(".card-footer"));
 
-  // High Score title
-  var cardHeaderEl = document.querySelector(".card-header");
-  var cardHeaderH2El = document.createElement("h2");
-  cardHeaderH2El.textContent = "High Scores";
-  cardHeaderH2El.style.textAlign = "center";
-  cardHeaderEl.appendChild(cardHeaderH2El);
-
-  // High Score card
+  // High Score elements
   var cardBodyEl = document.querySelector(".card-body");
+  var highScorePageEl = document.createElement("ol");
+  var highScoreTitleEl = document.createElement("h2");
   var highScoreListEl = document.createElement("ol");
+  var highScoreDivEl = document.createElement("div");
+  var highScoreEl;
+
+  // Title
+  highScoreTitleEl.textContent = "High scores";
+  highScoreEl = document.createElement("li");
+  highScoreEl.appendChild(highScoreTitleEl);
+  highScorePageEl.appendChild(highScoreEl);
+
+  // High score list
   highScoreListEl.style.backgroundColor = "#E8E8E8";
+  highScoreListEl.style.paddingLeft = "20px";
   var scores = JSON.parse(localStorage.getItem("scores"))
   if (scores) {
     for (var i = 0; i < scores.length; i++) {
-      var highScoreEl = document.createElement("li");
+      highScoreEl = document.createElement("li");
       highScoreEl.textContent = scores[i].key + "-" + scores[i].val;
+      highScoreEl.style.display = "list-item";
+      highScoreEl.style.listStyleType = "decimal";
+      highScoreEl.style.listStylePosition = "inside";
       highScoreListEl.appendChild(highScoreEl);
 
     }
   } else {
     var highScoreEl = document.createElement("li");
-    highScoreEl.textContent = "No scores recorded (play and record yours!)";
+    highScoreEl.textContent = "No scores...play and record yours!";
     highScoreListEl.appendChild(highScoreEl);
   }
-  cardBodyEl.appendChild(highScoreListEl);
+  highScorePageEl.appendChild(highScoreListEl);
 
+  // The "High scores" page navigation buttons
   var goBackEl = document.createElement("button");
   goBackEl.id = "go-back";
   goBackEl.className = "btn";
   goBackEl.textContent = "Go Back";
-  var cardFooterEl = document.querySelector(".card-footer");
-  cardFooterEl.appendChild(goBackEl);
+  goBackEl.style.marginTop = "10px";
+  highScoreDivEl.appendChild(goBackEl);
   var clearEl = document.createElement("button");
   clearEl.id = "clear";
   clearEl.className = "btn";
   clearEl.textContent = "Clear high scores";
-  var cardFooterEl = document.querySelector(".card-footer");
-  cardFooterEl.appendChild(clearEl);
+  clearEl.style.marginTop = "10px";
+  highScoreDivEl.appendChild(clearEl);
+  highScorePageEl.appendChild(highScoreDivEl);
 
-  // Activate "Go back" and "Clear high scores" buttons
+  // Activate the buttons
   clearEl.addEventListener("click", function () { showHighScores("clear") });
   goBackEl.addEventListener("click", codeQuiz);
+
+  cardBodyEl.appendChild(highScorePageEl);
+
   console.log("END OF showHighScores()");
 };
 
@@ -298,19 +320,30 @@ var storeScore = function () {
 var endQuiz = function () {
   console.log("START OF endQuiz()");
   Done = true; // just to make sure
-  removeAllChildNodes(document.querySelector(".answer-list"))
   removeAllChildNodes(document.querySelector(".card-body"));
-  document.querySelector(".quiz h1").textContent = "All Done";
-  var lastAnswerStatusEl = document.getElementById("last-answer-status");
-  if (lastAnswerStatusEl) {
-    lastAnswerStatusEl.remove();
-  }
-  var h2El = document.querySelector(".card-header h2");
-  h2El.style.minWidth = "200px";
-  h2El.textContent = "Your final score: " + timeLeft;
+  
+  // Setup for reporting score
+  var cardBodyEl = document.querySelector(".card-body");  
+  var reportScoreListEl = document.createElement("ol");
+  reportScoreListEl.style.listStyleType = "none";
+  var reportScoreFirstEl = document.createElement("li");
+  var reportScoreSecondEl = document.createElement("li");
+  var reportScoreH1El = document.createElement("h1");
+  var reportScoreH2El = document.createElement("h2");
+  reportScoreH1El.textContent = "All Done";
+  reportScoreFirstEl.appendChild(reportScoreH1El);
+  reportScoreH2El.style.fontSize = "1.2em";
+  reportScoreH2El.textContent = "Your final score: " + timeLeft;
+  reportScoreSecondEl.appendChild(reportScoreH2El);
+  reportScoreListEl.appendChild(reportScoreFirstEl);
+  reportScoreListEl.appendChild(reportScoreSecondEl);
+  
+  // Assign the global value for final score...
+  // used by other functions
   finalScore = timeLeft;
 
-  var initialsPromptEl = document.createElement("div");
+  // Record initials and capture high score
+  var initialsPromptEl = document.createElement("p");
   initialsPromptEl.textContent = "Enter Initials:"
   initialsPromptEl.setAttribute("id", "initials-prompt");
 
@@ -322,13 +355,16 @@ var endQuiz = function () {
   var buttonEl = document.createElement("button");
   buttonEl.className = "submit-btn";
   buttonEl.textContent = "submit";
-
-  var cardBodyEl = document.querySelector(".card-body");
-  cardBodyEl.appendChild(initialsPromptEl);
-  cardBodyEl.appendChild(inputInitialsEl);
-  cardBodyEl.appendChild(buttonEl);
-
   buttonEl.addEventListener("click", storeScore);
+
+  var inputScoreEl = document.createElement("li");
+  inputScoreEl.appendChild(initialsPromptEl);
+  inputScoreEl.appendChild(inputInitialsEl);
+  inputScoreEl.appendChild(buttonEl);
+  reportScoreListEl.appendChild(inputScoreEl)
+
+  cardBodyEl.appendChild(reportScoreListEl);
+  
   console.log("END OF endQuiz()");
 };
 
@@ -375,7 +411,7 @@ var buildWelcomePage = function () {
 
   // Welcome card
   var cardHeaderEL = document.querySelector(".card-header");
-  cardHeaderEL.innerHTML = "<h2 style='text-align: left;'>Answer each question as quick as possible...seconds matter. If your answer is wrong, you will be penalized 10 seconds.<br> <br>Do well my friend!</h2>";
+  cardHeaderEL.innerHTML = "<h2 style='text-align: center;'>Answer each question as quick as possible...seconds matter. If your answer is wrong, you will be penalized 10 seconds.<br> <br>Do well my friend!</h2>";
 
   // START QUIZ button
   var buttonEl = document.createElement("button");
