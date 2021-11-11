@@ -216,13 +216,13 @@ var showHighScores = function (clearArg) {
   if (scores) {
     for (var i = 0; i < scores.length; i++) {
       var highScoreEl = document.createElement("li");
-      highScoreEl.textContent = JSON.stringify(scores[i].key + "-" + scores[i].val);
+      highScoreEl.textContent = scores[i].key + "-" + scores[i].val;
       highScoreListEl.appendChild(highScoreEl);
 
     }
   } else {
     var highScoreEl = document.createElement("li");
-    highScoreEl.textContent = "No scores recored";
+    highScoreEl.textContent = "No scores recorded (play and record yours!)";
     highScoreListEl.appendChild(highScoreEl);
   }
   cardBodyEl.appendChild(highScoreListEl);
@@ -250,14 +250,13 @@ var showHighScores = function (clearArg) {
 var storeScore = function () {
   console.log("START OF storeScore()");
   Done = true;
-  initials = document.getElementById("initials-input").value;
+  initials = document.getElementById("initials-input").value.toUpperCase();
   if (!initials) {
     alert("You must enter your initials!");
     endQuiz();
     console.log("END OF storeScore()");
     return;
   }
-  var initialsWithScore = initials + "-" + finalScore;
   var scores = localStorage.getItem("scores");
   var scoresObj;
   if (scores) {

@@ -57,6 +57,12 @@ body {
   justify-content: center;
 }
 
+.card-body ol li {
+  min-width: 200px;
+  text-align: left;
+  min-width: 300px;
+}
+
 .card-body #initials-input {
   font-size: 20px;
   padding-left: 10px;
@@ -83,7 +89,7 @@ body {
 
 
 .card-footer {
-  margin-top: 50px;
+  margin-top: 20px;
   display: flex;
   justify-content: center;
   /*max-width: 200px;*/
