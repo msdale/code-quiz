@@ -92,6 +92,7 @@ var quizTimer = function () {
       Done = true;
       clearInterval(quizTimeInterval);
       console.log("quizTimer is OFF");
+      endQuiz();
     }
 
   }, 1000);
