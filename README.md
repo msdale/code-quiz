@@ -5,6 +5,8 @@ Take a break to test your JavaScript knowledge.
 It'll just take a few minutes.
 Who knows, you might be the new high scorer!
 
+## Initial Page Image
+
 ![Choose password length](./assets/images/code-quiz.png)
 
 ## Website
